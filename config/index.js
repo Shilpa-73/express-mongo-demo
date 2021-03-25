@@ -1,3 +1,3 @@
 'use strict'
 
-exports.router = require('./router');
+exports.routes = require('./routes');

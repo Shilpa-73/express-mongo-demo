@@ -6,13 +6,13 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const db = require('./lib/db')
-const router = require('./config/router')
+const routes = require('./config/routes')
 const app = express()
 const port =  process.env.PORT;
 let models
 
 let corsOptions = {
-    origin: `http://localhost:${port}`
+    origin: [`http://localhost:${port}`, `http://localhost:3000`]
 };
 
 app.use(cors(corsOptions));
@@ -25,16 +25,33 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //Connect to DB
 let connectDB =async ()=>{
-   let { orms } =  await db.sequelize.connect()
-    models = orms
+   let { db:mongoDB,client } =  await db.mongodb.connect()
 
-    return Promise.resolve()
+    await new Promise((rs,rj)=>{
+        mongoDB.listCollections({name: 'user'})
+            .next(function(err, info) {
+                if (!info) {
+                    mongoDB.createCollection("user")
+
+                    mongoDB.collection('user').createIndex( { "username": 1 }, { unique: true } )
+                    mongoDB.collection('user').createIndex( { "email": 1 }, { unique: true } )
+                }
+                rs()
+            });
+    })
+
+    models = {User:mongoDB.collection('user')}
+    return Promise.resolve({db:mongoDB,client})
 }
-connectDB().then(()=>{app.use('/sales', router({app,models}))})
+connectDB().then(({db,client})=>{
+    app.use('/users', routes.user({app,models,db,client}))
+    app.use('/auth', routes.auth({app,models,db,client}))
+})
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello Welcome to the NodeJS!')
 })
+
 
 app.listen(port, async() => {
     console.log(`Example app listening at http://localhost:${port}`)

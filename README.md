@@ -2,7 +2,7 @@
 
 # To start the project please follow below steps 
 
-1  Clone the repository
+1  Clone the repository and create database `test` in RoboMongo or any tool you are using 
 
 2  Run a command `npm i`
 

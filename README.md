@@ -10,12 +10,7 @@
    ```js
        NODE_ENV=development
        PORT=3001
-       DB=postgres
-       DB_HOST=localhost
-       DB_PORT=5432
-       DB_USER=postgres
-       DB_PASSWORD=postgres
-       DB_SCHEMA=public
+       TOKEN_SECRET=09f26e402586e2faa8da4c98a35f1b20d6b033c60
    ``` 
    
 4  Run the file using command `node server.js`   
@@ -24,14 +19,22 @@
 
 6  Once the server started Call the below apis 
 
-   - to save sales data call the route http://localhost:3001/sales/save
+   - for user registration call the route http://localhost:3001/users/save (Sign up api)
       ```js
          {
-              "amount":100,
+              "name":"Shilpa Vasava",
               "username":"shilpa",
-              "date":"2021-03-01T09:06:20.280Z"
+              "email":"shilpa@gmail.com",
+              "password":"*****"
          }
       ```
-
-   - to fetch sales data   call the route http://localhost:3001/sales/fetch/:statsType   (statsType must be any of `daily`,`weekly`, `monthly`)
-    
+   
+   - for user list call the route http://localhost:3001/users/list
+   
+   - for auth signin call the route http://localhost:3001/auth/signin         
+      ```js
+               {                    
+                    "username":"shilpa",                    
+                    "password":"*****"
+               }
+       ```

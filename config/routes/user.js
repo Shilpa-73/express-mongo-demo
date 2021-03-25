@@ -26,6 +26,7 @@ let allRoutes = ({models})=>{
 
         if(!req.body.username || !req.body.name || !req.body.email || !req.body.password){
             return res.json({
+                flag:false,
                 message:'username, name, email, password are the required fields!'
             })
         }
@@ -35,7 +36,10 @@ let allRoutes = ({models})=>{
         console.log(`req.body.password `, generatedPassword)
 
         User.insertOne(req.body).then(result=>{
-            return res.json(result)
+            return res.json({
+                flag:true,
+                message:'Your registration done successfully!'
+            })
         })
 
     })
@@ -48,13 +52,12 @@ let allRoutes = ({models})=>{
         console.log(`id is here!!!`, id)
         let data = req.body
 
-        if(!ObjectId.isValid(id)) return res.json({message:'Invalid ID!'})
+        if(!ObjectId.isValid(id)) return res.json({  flag:false, message:'Invalid ID!'})
 
         return User.find({_id:ObjectId(id)}).toArray(async (err, docs) =>{
-            if(!docs.length) return res.json({message:'No Record found for this ID!'})
+            if(!docs.length) return res.json({flag:false,message:'No Record found for this ID!'})
 
             //Update the user detail here!
-
             const updateDoc = {
                 $set: data,
             };
@@ -62,6 +65,8 @@ let allRoutes = ({models})=>{
             console.log(
                 `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`,
             );
+
+            return res.json({  flag:true, message:'Detail updated!'})
         });
     })
 
@@ -71,10 +76,10 @@ let allRoutes = ({models})=>{
         let { User } = models
         let { id } = req.params
 
-        if(!ObjectId.isValid(id)) return res.json({message:'Invalid ID!'})
+        if(!ObjectId.isValid(id)) return res.json({  flag:false, message:'Invalid ID!'})
 
         return User.find({_id:ObjectId(id)}, { password:0 } ).toArray((err, docs) =>{
-            if(!docs.length) return res.json({message:'No Record found for this ID!'})
+            if(!docs.length) return res.json({  flag:false, message:'No Record found for this ID!'})
             return res.json(docs[0])
         });
     })
@@ -84,15 +89,17 @@ let allRoutes = ({models})=>{
 
         let { User } = models
         let { id } = req.params
-        if(!ObjectId.isValid(id)) return res.json({message:'Invalid ID!'})
+        if(!ObjectId.isValid(id)) return res.json({  flag:false,message:'Invalid ID!'})
 
         const result = await User.deleteOne({_id:ObjectId(id)});
         if (result.deletedCount === 1) {
             return res.json({
+                flag:true,
                 message: "Successfully deleted one document."
             })
         } else {
             return res.json({
+                flag:false,
                 message: "No documents matched the query. Deleted 0 documents."
             })
         }
@@ -104,7 +111,10 @@ let allRoutes = ({models})=>{
         let { User } = models
 
         return User.find({}).toArray((err, docs) =>{
-            return res.json(docs)
+            return res.json({
+                data:docs,
+                flag:true
+            })
         });
     })
 

@@ -26,17 +26,10 @@ let allRoutes = ({models})=>{
             let token = jwt.sign({username}, process.env.TOKEN_SECRET, { expiresIn: "1d" });
 
             return res.json({
-                token
+                flag:true,
+                token,
+                username
             })
-        });
-    })
-
-    router.get("/signup", async(req, res) => {
-
-        let { User } = models
-
-        return User.find({}).toArray((err, docs) =>{
-            return res.json(docs)
         });
     })
 

@@ -41,6 +41,20 @@ let allRoutes = ({models})=>{
                 message:'Your registration done successfully!'
             })
         })
+            .catch(err=>{
+                if(err.message.includes('email_1') && err.message.includes('duplicate')){
+                    return res.json({
+                        flag:false,
+                        message:'This email id is already registered please try with other!'
+                    })
+                }
+                if(err.message.includes('username_1') && err.message.includes('duplicate')){
+                    return res.json({
+                        flag:false,
+                        message:'This username already registered please try with other!'
+                    })
+                }
+            })
 
     })
 
@@ -80,6 +94,7 @@ let allRoutes = ({models})=>{
 
         return User.find({_id:ObjectId(id)}, { password:0 } ).toArray((err, docs) =>{
             if(!docs.length) return res.json({  flag:false, message:'No Record found for this ID!'})
+            if(docs[0].password) delete docs[0].password
             return res.json(docs[0])
         });
     })
